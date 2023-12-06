@@ -1,13 +1,13 @@
 vim9script
 
-var input = readfile($'{expand("%:h:h")}/input/example.txt')
+var input = readfile($'{expand("%:h:h")}/input/part-1.txt')
 
 var records = input
   ->mapnew((_, o) =>
     o->split(':')[1]
      ->trim()
-     ->split()
-     ->mapnew((_, k) => k->str2nr()))
+     ->mapnew((_, i) => i->substitute('\s\+', '', 'g')))
+
 var experiments: number = records[0]->len()
 
 def NoMotion(charge: number, timeLeft: number): bool
@@ -32,12 +32,4 @@ def WinningRaces(time: number, distance: number): list<any>
   return races->filter((_, d) => d > distance)
 enddef
 
-# This may be a problem when all experiments run distances of 0. Overcorrecting
-# for this may be a problem when all races run a distance of 1.
-
-var errorMargin = 1
-for i in experiments->range()
-  errorMargin = errorMargin * WinningRaces(records[0][i], records[1][i])->len()
-endfor
-
-echo errorMargin
+echo WinningRaces(records[0]->str2nr(), records[1]->str2nr())->len()

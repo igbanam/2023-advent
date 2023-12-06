@@ -1,6 +1,8 @@
 vim9script
 
-var input = readfile($'{expand("%:h:h")}/input/part-1.txt')
+import "../../00/vim/utils.vim"
+
+var input = utils.LoadInput('part-1')
 
 var records = input
   ->mapnew((_, o) =>

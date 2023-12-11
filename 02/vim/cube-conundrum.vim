@@ -2,37 +2,25 @@ vim9script
 
 import "../../00/vim/utils.vim"
 
-def CanPlay(theColor: string, theCount: number, theBag: dict<number>): bool
-  return theBag[theColor] >= theCount
-enddef
-
 def ParseGames(gameSets: list<any>, theBag: dict<number>): number
   var result = []
   var i = 1
   for gameSet in gameSets
-    var playableGames: list<bool>
+    var maxes: dict<number>
     for game in gameSet
-      var playableHands: list<bool>
       for hand in game
         var _hand = hand->split()
-        if CanPlay(_hand[1], _hand[0]->str2nr(), theBag)
-          playableHands->add(true)
+        if maxes->has_key(_hand[1])
+          maxes[_hand[1]] = max([maxes[_hand[1]], _hand[0]->str2nr()])
         else
-          playableHands->add(false)
+          maxes[_hand[1]] = _hand[0]->str2nr()
         endif
       endfor
-      if playableHands->filter((_, pl) => pl == false)->empty()
-        playableGames->add(true)
-      else
-        playableGames->add(false)
-      endif
     endfor
-    if playableGames->filter((_, pg) => pg == false)->empty()
-      result->add(i)
-    endif
+    result->add(maxes)
     i += 1
   endfor
-  return result->reduce((p, v) => p + v, 0)
+  return result->reduce((p, v) => p + v->values()->reduce((p0, v0) => p0 * v0, 1), 0)
 enddef
 
 var bag: dict<number> = {
